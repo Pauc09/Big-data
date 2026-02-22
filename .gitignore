@@ -1,0 +1,16 @@
+
+# Python
+.venv/
+_pycache_/
+*.pyc
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Cloud9
+.c9/
+
+# OS / misc
+.DS_Store
+.env
