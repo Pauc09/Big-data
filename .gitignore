@@ -1,16 +1,23 @@
+# Ignorar lo viejo y lo innecesario
+sakila-db/
+fastapi-rds/
+chinook-frontend/
+__pycache__/
+*.pyc
+venv/
+.venv/
+Chinook_MySql.sql
+hola.py
+primo.py
+test_primo.py
+requirements.txt
 
 # Python
-.venv/
-_pycache_/
-*.pyc
-.pytest_cache/
+*.egg-info/
+dist/
 
-# Jupyter
-.ipynb_checkpoints/
+# Node
+node_modules/
 
-# Cloud9
-.c9/
-
-# OS / misc
-.DS_Store
+# Env files
 .env
