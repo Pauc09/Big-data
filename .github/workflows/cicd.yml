@@ -22,6 +22,11 @@ jobs:
           pip install fastapi uvicorn sqlalchemy aiomysql pydantic-settings pytest pytest-asyncio httpx pytest-cov
 
       - name: Correr pruebas backend
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
         run: |
           cd backend
           pytest tests/ -v --cov=app --cov-report=term-missing
@@ -38,9 +43,9 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
+            source /home/ubuntu/environment/venv/bin/activate
             cd /home/ubuntu/environment/fastapi-rds
             git -C /home/ubuntu/environment pull origin main
-            source /home/ubuntu/environment/venv/bin/activate
             pkill -f uvicorn || true
             nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
 
