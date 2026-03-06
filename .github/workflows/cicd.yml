@@ -36,7 +36,30 @@ jobs:
     needs: test-backend
     if: success()
     steps:
-      - name: Desplegar backend al EC2
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Copiar backend al EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "backend/"
+          target: "/home/ubuntu/environment/fastapi-rds"
+          strip_components: 1
+
+      - name: Copiar frontend al EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "frontend/"
+          target: "/home/ubuntu/environment/chinook-frontend"
+          strip_components: 1
+
+      - name: Reiniciar servicios
         uses: appleboy/ssh-action@v1.0.0
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -44,22 +67,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             source /home/ubuntu/environment/venv/bin/activate
-            cd /home/ubuntu/environment/fastapi-rds
-            git pull origin main
             pkill -f uvicorn || true
-            nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
-            echo "Backend desplegado"
-
-      - name: Desplegar frontend al EC2
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/environment/chinook-frontend
-            git pull origin main
-            npm install
+            nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 --app-dir /home/ubuntu/environment/fastapi-rds > /tmp/backend.log 2>&1 &
             pkill -f "vite" || true
+            cd /home/ubuntu/environment/chinook-frontend
+            npm install
             nohup npm run dev -- --host > /tmp/frontend.log 2>&1 &
-            echo "Frontend desplegado"
+            echo "Servicios reiniciados"
