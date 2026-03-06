@@ -42,22 +42,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          debug: true
           script: |
-            source /home/ubuntu/environment/venv/bin/activate
-            cd /home/ubuntu/environment/fastapi-rds
-            git -C /home/ubuntu/environment pull origin main
-            pkill -f uvicorn || true
-            nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
-
-      - name: Desplegar frontend al EC2
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/environment/chinook-frontend
-            git -C /home/ubuntu/environment pull origin main
-            npm install
-            pkill -f "vite" || true
-            nohup npm run dev -- --host > /tmp/frontend.log 2>&1 &
+            echo "Conexion exitosa"
+            whoami
